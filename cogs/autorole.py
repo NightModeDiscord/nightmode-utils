@@ -46,7 +46,7 @@ class AutoRole(Cog):
     async def supporterscan(self, ctx: Context):
         await ctx.send("Starting scan!")
         added = 0
-        failed = 0
+        removed = 0
 
         supporter_role = self.supporter_role
         for m in ctx.guild.members:
@@ -55,17 +55,28 @@ class AutoRole(Cog):
                 isinstance(act, CustomActivity)
                 and act.name
                 and "gg/nightmode" in act.name.lower()
-                and supporter_role not in m.roles
             ):
+                if supporter_role not in m.roles:
+                    try:
+                        await m.add_roles(supporter_role)
+                    except (NotFound, Forbidden):
+                        pass
+                    else:
+                        added += 1
+            elif supporter_role in m.roles:
                 try:
-                    await m.add_roles(supporter_role)
+                    await m.remove_roles(supporter_role)
                 except (NotFound, Forbidden):
-                    failed += 1
+                    pass
                 else:
-                    added += 1
+                    removed += 1
+
+        supporter_count = len(self.supporter_role.members)
 
         await ctx.send(
-            f"Added supporter role to {added} members, failed to add to {failed}"
+            f"Added supporter role to {added} members\n"
+            f"Removed supporter role from {removed} members\n"
+            f"Total supporters: {supporter_count}\n"
         )
 
 
