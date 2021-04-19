@@ -31,6 +31,8 @@ class NightMode(commands.Bot):
             command_prefix="!",
             intents=Intents.all(),
             allowed_mentions=allowed_mentions,
+            owner_ids=[721720908502401026, 586531356272754709],
+            strip_after_prefix=True,
         )
 
         if load_extensions:
